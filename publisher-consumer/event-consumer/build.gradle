@@ -1,0 +1,57 @@
+apply plugin: 'com.nordea.java'
+apply plugin: 'com.nordea.release'
+apply plugin: 'com.nordea.deployment'
+apply plugin: 'com.nordea.bamboo'
+apply plugin: 'application'
+
+group 'com.nordea.emarkets.fx'
+
+description = "Event consumer"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName = "event.consumer.application.Application"
+
+dependencies {
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    compile 'org.apache.commons:commons-math3:3.6.1'
+
+    compile(group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: '4.2.2') {
+        exclude module: 'guice'
+    }
+    compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
+    compile group: 'com.nordea.emarkets.fx', name: 'disruptor-event-journal', version: '0.0.1-SNAPSHOT'
+
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    compile 'org.apache.commons:commons-math3:3.6.1'
+
+    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+    implementation 'com.google.guava:guava:23.0'
+    implementation 'io.aeron:aeron-archive:1.15.2'
+    implementation 'io.aeron:aeron-samples:1.15.2'
+    implementation 'com.lmax:disruptor:3.4.2'
+
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+}
+
+task profiler(type: JavaExec) {
+    main = "event.consumer.application.Application"
+    classpath = sourceSets.main.runtimeClasspath
+
+    jvmArgs = ['-XX:+UnlockCommercialFeatures',
+               '-XX:+FlightRecorder',
+               '-XX:+UnlockDiagnosticVMOptions',
+               '-XX:+DebugNonSafepoints',
+               '-XX:StartFlightRecording=duration=180s,delay=0s,settings=C:\\Users\\G01972\\.jmc\\5.5.2\\.metadata\\.plugins\\com.jrockit.mc.flightrecorder.controlpanel.ui\\.rectemplates\\memory_only.jfc,filename=hmm.jfr',
+               '-XX:+StartAttachListener',
+               '-Xms50m',
+               '-Dcom.sun.management.jmxremote=true',
+               '-Dcom.sun.management.jmxremote.port=7091',
+               '-Dcom.sun.management.jmxremote.rmi.port=7091',
+               '-Dcom.sun.management.jmxremote.authenticate=false',
+               '-Dcom.sun.management.jmxremote.ssl=false',
+               '-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector',
+               '-DAsyncLogger.WaitStrategy=Sleep']
+}
