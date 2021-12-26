@@ -1,4 +1,4 @@
-# Source code for the bachelor project of Matias Ebbesen.
+# Bachelor project Event Journal
 
  * disruptor-event-journal. Location of the Event Journal.
  * journal-event-reader. Location of the Journal Event Reader.
